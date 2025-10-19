@@ -1,0 +1,56 @@
+# Docker Compose for VIETCONNECT SOLUTIONS Development Environment
+# This configuration sets up a complete development environment with:
+# - Backend API (Node.js) with hot-reload
+# - Frontend (Next.js) with hot-reload
+# - Shared network for all services
+# - References to existing MySQL and Redis containers
+
+services:
+  # Backend API Service (Development Mode)
+  backend-api-dev:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: builder # Use the builder stage for development
+    image: vietconnect-backend-dev:latest
+    container_name: vietconnect-backend-dev
+    restart: unless-stopped
+    ports:
+      - "4000:4000"
+    env_file:
+      - docker.env
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: npm run dev
+    networks:
+      - vietconnect-network
+
+  # Frontend Service (Development Mode)
+  frontend-app-dev:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: builder # Use the builder stage for development
+    image: vietconnect-frontend-dev:latest
+    container_name: vietconnect-frontend-dev
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    env_file:
+      - docker.env
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+      - /app/.next
+    command: npm run dev
+    depends_on:
+      - backend-api-dev
+    networks:
+      - vietconnect-network
+
+# Network for all services - will connect to existing containers
+networks:
+  vietconnect-network:
+    name: vietconnect-network
+    driver: bridge

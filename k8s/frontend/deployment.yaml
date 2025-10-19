@@ -1,0 +1,82 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bicrypto-frontend
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bicrypto-frontend
+  template:
+    metadata:
+      labels:
+        app: bicrypto-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: bicrypto-frontend:latest  # Thay bằng image registry của bạn
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          valueFrom:
+            configMapKeyRef:
+              name: bicrypto-config
+              key: NODE_ENV
+        - name: NEXT_PUBLIC_SITE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: bicrypto-config
+              key: NEXT_PUBLIC_SITE_URL
+        - name: NEXT_PUBLIC_BACKEND_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: bicrypto-config
+              key: NEXT_PUBLIC_BACKEND_PORT
+        - name: NEXT_PUBLIC_FRONTEND_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: bicrypto-config
+              key: NEXT_PUBLIC_FRONTEND_PORT
+        - name: NEXT_PUBLIC_SITE_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: bicrypto-config
+              key: NEXT_PUBLIC_SITE_NAME
+        - name: NEXT_PUBLIC_SITE_DESCRIPTION
+          valueFrom:
+            configMapKeyRef:
+              name: bicrypto-config
+              key: NEXT_PUBLIC_SITE_DESCRIPTION
+        - name: NEXTAUTH_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: bicrypto-secrets
+              key: NEXTAUTH_SECRET
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend-service
+  namespace: default
+spec:
+  selector:
+    app: bicrypto-frontend
+  ports:
+  - port: 80
+    targetPort: 3000
+  type: ClusterIP
+
