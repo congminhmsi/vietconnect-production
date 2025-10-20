@@ -46,15 +46,15 @@ const SidebarLogo = ({
   const logoType = navbarLogoDisplay === "FULL_LOGO_ONLY" ? "text" : "icon";
   const shouldShowSiteName = navbarLogoDisplay === "SQUARE_WITH_NAME";
 
-  // Better sizing logic for sidebar - EVEN LARGER LOGO
+  // Better sizing logic for sidebar - UPDATED TO 200x200
   const getLogoClassName = () => {
     switch (navbarLogoDisplay) {
       case "FULL_LOGO_ONLY":
         return "h-20 lg:h-24 w-auto max-w-[350px] lg:max-w-[400px]";
       case "ICON_ONLY":
-        return "h-20 w-20 lg:h-24 lg:w-24";
+        return "h-[200px] w-[200px]";
       default: // SQUARE_WITH_NAME
-        return "h-20 w-20 lg:h-24 lg:w-24";
+        return "h-[200px] w-[200px]";
     }
   };
 

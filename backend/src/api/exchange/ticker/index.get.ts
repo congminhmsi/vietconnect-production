@@ -39,7 +39,32 @@ export default async () => {
     throw createError(404, "No tickers found in cache");
   }
 
-  const tickers = JSON.parse(cachedData || "{}");
-
-  return tickers;
+  try {
+    // Try to parse as regular JSON first
+    const tickers = JSON.parse(cachedData || "{}");
+    return tickers;
+  } catch (error) {
+    // If JSON parsing fails, try to fix the format by adding quotes around keys
+    try {
+      // Fix Redis format: remove single quotes and add quotes around ALL keys
+      let fixedData = cachedData;
+      
+      // Remove single quotes at the beginning and end
+      fixedData = fixedData.replace(/^'|'$/g, '');
+      
+      // Fix outer keys (BTC/USDT, ETH/USDT, etc.)
+      fixedData = fixedData.replace(/([A-Z]+[A-Z0-9]*\/[A-Z]+[A-Z0-9]*):/g, '"$1":');
+      
+      // Fix inner keys (last, baseVolume, quoteVolume, change)
+      fixedData = fixedData.replace(/([a-zA-Z]+):/g, '"$1":');
+      
+      const tickers = JSON.parse(fixedData);
+      return tickers;
+    } catch (fixError) {
+      console.error("Failed to parse ticker data:", error.message);
+      console.error("Failed to fix ticker data:", fixError.message);
+      console.error("Raw data:", cachedData.substring(0, 100) + "...");
+      throw createError(500, "Invalid ticker data format");
+    }
+  }
 };

@@ -76,18 +76,18 @@ export default function Logo({
   }
 
   // Determine dimensions and styles based on type - must be consistent on server and client
-  const defaultWidth = type === "icon" ? 80 : 350;
-  const defaultHeight = type === "icon" ? 80 : 350;
+  const defaultWidth = type === "icon" ? 200 : 350;
+  const defaultHeight = type === "icon" ? 200 : 350;
   const imageWidth = width || defaultWidth;
   const imageHeight = height || defaultHeight;
 
-  // Define styles that won't change between server and client - EVEN LARGER SIZES
+  // Define styles that won't change between server and client - UPDATED TO 200x200
   const containerClass = type === "icon"
-    ? "relative h-20 w-20 lg:h-24 lg:w-24 object-contain flex-shrink-0"
+    ? "relative h-[200px] w-[200px] object-contain flex-shrink-0"
     : "relative h-20 lg:h-24 w-auto max-w-[350px] lg:max-w-[400px] object-contain flex-shrink-0";
 
   const imageClass = type === "icon"
-    ? "h-20 w-20 lg:h-24 lg:w-24 object-contain flex-shrink-0"
+    ? "h-[200px] w-[200px] object-contain flex-shrink-0"
     : "h-20 lg:h-24 w-auto max-w-[350px] lg:max-w-[400px] object-contain flex-shrink-0";
 
   return (
